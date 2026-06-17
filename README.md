@@ -142,6 +142,31 @@ Run as modules from the repo root:
 The read-only `cli/` tools (`info`, `last_update`, `metadata_get`,
 `filter_tickers`, `failed_symbols`, …) each accept `--help`.
 
+## Database maintenance
+
+Once you have a store, `market_data.toolkit` keeps it healthy: inspect size,
+diagnose symbol status, check/repair LMDB locks, and compact to reclaim disk. It
+runs against the same ArcticDB libraries the updater writes.
+
+| Command | What it does |
+|---|---|
+| `python -m market_data.toolkit analyze --mode storage` | Per-library size + storage breakdown |
+| `python -m market_data.toolkit analyze --mode symbols` | Symbol counts across libraries |
+| `python -m market_data.toolkit diagnose --mode status` | Per-symbol data-status report (complete/stale/failed) |
+| `python -m market_data.toolkit test --mode connection` | Verify the store opens and reads |
+| `python -m market_data.toolkit check --mode lmdb` | LMDB health check |
+| `python -m market_data.toolkit repair --mode locks --fix` | Clear stale LMDB locks |
+| `python -m market_data.toolkit optimize --mode prune --dry-run` | Preview prunable data |
+| `python -m market_data.toolkit optimize --mode compact` | Compact the store to reclaim disk |
+
+Every command takes an optional `--db-path <uri>`; without it, the path from your
+`config.json` is used. Run any subcommand with `--help` for its full flags.
+
+> **System dependency:** `repair --mode lmdb` and `optimize --mode compact` shell
+> out to the LMDB command-line tools `mdb_copy` / `mdb_stat`. Install them via
+> `lmdb-utils` (Debian/Ubuntu: `apt install lmdb-utils`) or `lmdb` (macOS:
+> `brew install lmdb`). Every other command is pure Python + ArcticDB.
+
 ## Troubleshooting
 
 - **Where's my database?** — at `database.arcticdb_uri` from `config.json`
