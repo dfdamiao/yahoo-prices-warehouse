@@ -544,10 +544,12 @@ class SymbolAdder:
 
     def _check_exists_in_metadata(self, symbol: str) -> bool:
         """Check if symbol exists in symbol_metadata library."""
+        lib = self.data_manager.symbol_metadata_lib
+        # Fresh database: the aggregate metadata symbol does not exist yet.
+        if not lib.has_symbol("symbols_metadata"):
+            return False
         try:
-            symbols_metadata = self.data_manager.symbol_metadata_lib.read(
-                "symbols_metadata"
-            ).data
+            symbols_metadata = lib.read("symbols_metadata").data
             return symbol in symbols_metadata.index
         except Exception as e:
             logger.error(f"Error checking if {symbol} exists in metadata: {str(e)}")
@@ -866,9 +868,12 @@ class SymbolAdder:
 
             # 2. Add/update metadata in symbol_metadata library
             logger.info(f"Updating symbol_metadata for {symbol}")
-            symbols_metadata = self.data_manager.symbol_metadata_lib.read(
-                "symbols_metadata"
-            ).data
+            meta_lib = self.data_manager.symbol_metadata_lib
+            if meta_lib.has_symbol("symbols_metadata"):
+                symbols_metadata = meta_lib.read("symbols_metadata").data
+            else:
+                # Fresh database: start the aggregate metadata frame empty.
+                symbols_metadata = pd.DataFrame()
 
             # CRITICAL FIX: Normalize timezone handling for datetime columns
             def normalize_datetime_column(df, col_name):

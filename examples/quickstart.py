@@ -22,6 +22,8 @@ def main():
     for sym in ESSENTIAL_TICKERS:
         result = adder.add_symbol(sym)
         print(f"  {'OK  ' if result.get('success') else 'FAIL'} {sym}")
+    # Release the writer's LMDB handle before opening the reader (one open at a time).
+    adder.data_manager.close()
 
     mda = MarketDataAccess()
     print("\nSample — SPY Close (last 5 rows):")
