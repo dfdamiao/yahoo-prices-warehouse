@@ -1,0 +1,113 @@
+ticker,category
+AAPL,US Large Cap
+MSFT,US Large Cap
+GOOGL,US Large Cap
+GOOG,US Large Cap
+AMZN,US Large Cap
+NVDA,US Large Cap
+META,US Large Cap
+TSLA,US Large Cap
+BRK-B,US Large Cap
+JPM,US Large Cap
+V,US Large Cap
+MA,US Large Cap
+UNH,US Large Cap
+HD,US Large Cap
+PG,US Large Cap
+JNJ,US Large Cap
+XOM,US Large Cap
+CVX,US Large Cap
+KO,US Large Cap
+PEP,US Large Cap
+COST,US Large Cap
+WMT,US Large Cap
+BAC,US Large Cap
+ABBV,US Large Cap
+MRK,US Large Cap
+LLY,US Large Cap
+AVGO,US Large Cap
+ORCL,US Large Cap
+CRM,US Large Cap
+ADBE,US Large Cap
+NFLX,US Large Cap
+AMD,US Large Cap
+INTC,US Large Cap
+CSCO,US Large Cap
+QCOM,US Large Cap
+TXN,US Large Cap
+DIS,US Large Cap
+NKE,US Large Cap
+MCD,US Large Cap
+BA,US Large Cap
+CAT,US Large Cap
+GE,US Large Cap
+HON,US Large Cap
+UPS,US Large Cap
+GS,US Large Cap
+MS,US Large Cap
+WFC,US Large Cap
+T,US Large Cap
+VZ,US Large Cap
+CMCSA,US Large Cap
+SPY,Index ETF
+VOO,Index ETF
+IVV,Index ETF
+QQQ,Index ETF
+DIA,Index ETF
+IWM,Index ETF
+VTI,Index ETF
+RSP,Index ETF
+MDY,Index ETF
+SCHB,Index ETF
+XLK,Sector ETF
+XLF,Sector ETF
+XLE,Sector ETF
+XLV,Sector ETF
+XLY,Sector ETF
+XLP,Sector ETF
+XLI,Sector ETF
+XLB,Sector ETF
+XLU,Sector ETF
+XLRE,Sector ETF
+XLC,Sector ETF
+TLT,Bond ETF
+IEF,Bond ETF
+SHY,Bond ETF
+AGG,Bond ETF
+BND,Bond ETF
+LQD,Bond ETF
+HYG,Bond ETF
+TIP,Bond ETF
+MUB,Bond ETF
+BIL,Bond ETF
+EFA,International ETF
+EEM,International ETF
+VEA,International ETF
+VWO,International ETF
+IEFA,International ETF
+IEMG,International ETF
+VXUS,International ETF
+ACWI,International ETF
+FXI,International ETF
+EWJ,International ETF
+GLD,Commodity ETF
+IAU,Commodity ETF
+SLV,Commodity ETF
+USO,Commodity ETF
+DBC,Commodity ETF
+GDX,Commodity ETF
+GDXJ,Commodity ETF
+PDBC,Commodity ETF
+VUG,Factor ETF
+VTV,Factor ETF
+MTUM,Factor ETF
+QUAL,Factor ETF
+USMV,Factor ETF
+VIG,Factor ETF
+SPHD,Factor ETF
+SPLV,Factor ETF
+VYM,Factor ETF
+SCHD,Factor ETF
+VXX,Volatility
+UVXY,Volatility
+SVXY,Volatility

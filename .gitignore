@@ -1,0 +1,30 @@
+# --- User config (never commit) ---
+config.json
+.env
+
+# --- The ArcticDB store + any data the user generates ---
+market_data_store/
+*.lmdb
+*.lmdb-lock
+data/
+logs/
+market_data_files/
+*.parquet
+*.csv
+!ticker_catalog.csv
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+build/
+dist/
+venv/
+.venv/
+
+# --- OS / editor ---
+.DS_Store
+.idea/
+.vscode/

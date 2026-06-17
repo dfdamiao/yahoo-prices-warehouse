@@ -1,0 +1,9 @@
+{
+  "database": {
+    "arcticdb_uri": "lmdb://./market_data_store"
+  },
+  "paths": {
+    "market_data_dir": "./market_data_files",
+    "logs_dir": "./logs"
+  }
+}
