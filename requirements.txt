@@ -1,5 +1,5 @@
 arcticdb>=4.0
-yfinance>=0.2.40
+yfinance>=1.7
 pandas>=1.5
 numpy>=1.23
 fuzzywuzzy>=0.18

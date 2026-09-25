@@ -14,7 +14,6 @@ from datetime import datetime, timedelta
 from typing import List, Dict, Any, Optional, Tuple
 from contextlib import contextmanager
 from pathlib import Path
-import yfinance.shared as shared
 
 
 import pandas as pd
@@ -26,6 +25,7 @@ from market_data.settings import MARKET_DATA_DIR
 from market_data.manager import MarketDataManager
 from market_data.progress_tracker import ProgressTracker
 from market_data._notify import send_telegram_notification
+from market_data.yf_errors import capture_yf_errors
 
 # Configure logging
 logger = logging.getLogger("market_data.updater")
@@ -832,9 +832,6 @@ class SymbolUpdater:
         delay = random.uniform(3, 6)
         time.sleep(delay)
 
-        # CRITICAL: Clear previous yfinance errors
-        shared._ERRORS.clear()
-
         # Download with retries
         for attempt in range(max_retries):
             try:
@@ -842,20 +839,21 @@ class SymbolUpdater:
                     f"Downloading {len(symbols)} symbols (attempt {attempt + 1})"
                 )
 
-                data = yf.download(
-                    tickers=symbols,
-                    period=period,
-                    interval="1d",
-                    group_by="ticker",
-                    auto_adjust=False,
-                    progress=False,
-                    timeout=90,
-                    threads=False,
-                    ignore_tz=False,
-                )
-
-                # CRITICAL: Capture yfinance errors after download
-                yf_errors = dict(shared._ERRORS)
+                # Per-ticker errors come off the yfinance logger: yfinance
+                # >= 1.4 no longer populates `shared._ERRORS`.
+                with capture_yf_errors() as cap:
+                    data = yf.download(
+                        tickers=symbols,
+                        period=period,
+                        interval="1d",
+                        group_by="ticker",
+                        auto_adjust=False,
+                        progress=False,
+                        timeout=90,
+                        threads=False,
+                        ignore_tz=False,
+                    )
+                yf_errors = dict(cap.errors)
 
                 if yf_errors:
                     logger.warning(f"YFinance reported {len(yf_errors)} errors")
@@ -1431,9 +1429,7 @@ class SymbolUpdater:
 
         # Pre-batch resource check
         pre_resource_status = self.resource_manager.check_and_manage_resources()
-        logger.debug(
-            f"Pre-batch resources: {pre_resource_status['status']}"
-        )
+        logger.debug(f"Pre-batch resources: {pre_resource_status['status']}")
 
         # Download batch data
         data, rate_limit_hit, resource_status, yf_errors = (
@@ -1496,7 +1492,11 @@ class SymbolUpdater:
                         )
 
                 if self._process_individual_symbol(
-                    symbol, data, batch_id, resource_status, yf_errors  # Add yf_errors
+                    symbol,
+                    data,
+                    batch_id,
+                    resource_status,
+                    yf_errors,  # Add yf_errors
                 ):
                     success_count += 1
                 else:
@@ -1542,9 +1542,7 @@ class SymbolUpdater:
             )
             self.session_manager.force_reset_session()
 
-        logger.debug(
-            f"Post-batch resources: {post_resource_status['status']}"
-        )
+        logger.debug(f"Post-batch resources: {post_resource_status['status']}")
 
         return rate_limit_hit
 
@@ -1629,8 +1627,7 @@ class SymbolUpdater:
                         )
                 except Exception as e:
                     logger.warning(
-                        f"Could not apply status filter ({e}); "
-                        f"using full priced list"
+                        f"Could not apply status filter ({e}); using full priced list"
                     )
                 logger.info(
                     f"Found {len(price_symbols)} symbols in price_history.daily library"
@@ -1855,7 +1852,7 @@ class SymbolUpdater:
         yf_version = getattr(yf, "__version__", "0.2.65")
 
         # Calculate actual failed count (after recovery)
-        actual_failed = final_stats['failed_symbols']
+        actual_failed = final_stats["failed_symbols"]
 
         # Final summary
         logger.info(
@@ -1876,9 +1873,9 @@ class SymbolUpdater:
 
         # Mark as completed
         self.progress_tracker.progress_data["session_info"]["status"] = "completed"
-        self.progress_tracker.progress_data["session_info"][
-            "end_time"
-        ] = datetime.now().isoformat()
+        self.progress_tracker.progress_data["session_info"]["end_time"] = (
+            datetime.now().isoformat()
+        )
         self.progress_tracker.save_progress()
 
         return final_stats
@@ -1920,7 +1917,9 @@ class SymbolUpdater:
             yf_version = getattr(yf, "__version__", "0.2.65")
 
             with open(report_path, "w") as f:
-                f.write(f"📊 ENHANCED YFINANCE {yf_version} FAILURE ANALYSIS REPORT 📊\n")
+                f.write(
+                    f"📊 ENHANCED YFINANCE {yf_version} FAILURE ANALYSIS REPORT 📊\n"
+                )
                 f.write(f"Generated: {datetime.now().isoformat()}\n")
                 f.write(f"yfinance version: {yf_version}\n\n")
 
@@ -2102,7 +2101,6 @@ if __name__ == "__main__":
         min_batch_size=120,  # Ultra-conservative
         max_batch_size=150,  # Ultra-conservative
     ) as updater:
-
         # Prepare and run update
         if updater.prepare_update():
             final_stats = updater.run_update()
